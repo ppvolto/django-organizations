@@ -8,8 +8,14 @@ from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
 import organizations.base
-import organizations.fields
+from organizations.fields import (
+    AutoCreatedField,
+    AutoLastModifiedField,
+    SlugField
+)
+from organizations.settings import organizations_settings
 
+# SlugField = get_slug_field()
 
 class Migration(migrations.Migration):
 
@@ -17,6 +23,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        migrations.swappable_dependency(organizations_settings.ORGANIZATION_SLUGFIELD),
         # more dependencies may be added dinamically
     ]
 
@@ -27,9 +34,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(help_text='The name of the organization', max_length=200)),
                 ('is_active', models.BooleanField(default=True)),
-                ('created', organizations.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False)),
-                ('modified', organizations.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
-                ('slug', organizations.fields.SlugField(editable=True, help_text='The name in all lowercase, suitable for URL identification', max_length=200, populate_from='name', unique=True)),
+                ('created', AutoCreatedField(default=django.utils.timezone.now, editable=False)),
+                ('modified', AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
+                ('slug', SlugField(editable=True, help_text='The name in all lowercase, suitable for URL identification', max_length=200, populate_from='name', unique=True)),
                 ('street_address', models.CharField(default='', max_length=100)),
                 ('city', models.CharField(default='', max_length=100)),
             ],
@@ -45,8 +52,8 @@ class Migration(migrations.Migration):
             name='CustomOwner',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', organizations.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False)),
-                ('modified', organizations.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
+                ('created', AutoCreatedField(default=django.utils.timezone.now, editable=False)),
+                ('modified', AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
                 ('organization', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='owner', to='test_abstract.CustomOrganization')),
             ],
             options={
@@ -60,8 +67,8 @@ class Migration(migrations.Migration):
             name='CustomUser',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', organizations.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False)),
-                ('modified', organizations.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
+                ('created', AutoCreatedField(default=django.utils.timezone.now, editable=False)),
+                ('modified', AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
                 ('is_admin', models.BooleanField(default=False)),
                 ('user_type', models.CharField(default='', max_length=1)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='organization_users', to='test_abstract.CustomOrganization')),

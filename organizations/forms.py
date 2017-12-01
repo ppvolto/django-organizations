@@ -28,7 +28,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.translation import ugettext_lazy as _
 
-from organizations.backends import invitation_backend
+from organizations.settings import organizations_settings
+
 from organizations.models import Organization
 from organizations.models import OrganizationUser
 from organizations.utils import create_organization
@@ -101,14 +102,14 @@ class OrganizationUserAddForm(forms.ModelForm):
         except get_user_model().MultipleObjectsReturned:
             raise forms.ValidationError(_("This email address has been used multiple times."))
         except get_user_model().DoesNotExist:
-            user = invitation_backend().invite_by_email(
+            user = organizations_settings.INVITATION_BACKEND().invite_by_email(
                     self.cleaned_data['email'],
                     **{'domain': get_current_site(self.request),
                         'organization': self.organization,
                         'sender': self.request.user})
         # Send a notification email to this user to inform them that they
         # have been added to a new organization.
-        invitation_backend().send_notification(user, **{
+        organizations_settings.INVITATION_BACKEND().send_notification(user, **{
             'domain': get_current_site(self.request),
             'organization': self.organization,
             'sender': self.request.user,
@@ -149,7 +150,7 @@ class OrganizationAddForm(forms.ModelForm):
         try:
             user = get_user_model().objects.get(email=self.cleaned_data['email'])
         except get_user_model().DoesNotExist:
-            user = invitation_backend().invite_by_email(
+            user = organizations_settings.INVITATION_BACKEND().invite_by_email(
                     self.cleaned_data['email'],
                     **{'domain': get_current_site(self.request),
                         'organization': self.cleaned_data['name'],

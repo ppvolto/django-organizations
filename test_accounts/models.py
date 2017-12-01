@@ -1,6 +1,9 @@
 from django.db import models
-from organizations.base import (OrganizationBase, OrganizationUserBase,
-                                OrganizationOwnerBase)
+from organizations.base import (
+    OrganizationBase,
+    OrganizationUserBase,
+    OrganizationOwnerBase
+)
 
 
 class Account(OrganizationBase):

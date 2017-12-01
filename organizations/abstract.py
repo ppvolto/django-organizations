@@ -26,8 +26,9 @@
 import warnings
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 try:
@@ -39,14 +40,20 @@ from organizations.base import OrgMeta
 from organizations.base import AbstractBaseOrganization
 from organizations.base import AbstractBaseOrganizationUser
 from organizations.base import AbstractBaseOrganizationOwner
-from organizations.fields import SlugField
+from organizations.base import (
+    get_organisation_model,
+    get_organisation_user_model,
+    get_organisation_owner_model
+)
+# from organizations.fields import get_slug_field
 from organizations.fields import AutoCreatedField
 from organizations.fields import AutoLastModifiedField
 from organizations.signals import user_added
 from organizations.signals import user_removed
 from organizations.signals import owner_changed
 
-USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+# SlugField = get_slug_field()
+
 ORGS_TIMESTAMPED_MODEL = getattr(settings, 'ORGS_TIMESTAMPED_MODEL', None)
 
 if ORGS_TIMESTAMPED_MODEL:
@@ -67,14 +74,15 @@ class SharedBaseModel(models.Model):
     def _org_user_model(self):
         model = self.__class__.module_registry[self.__class__.__module__]['OrgUserModel']
         if model is None:
-            model = self.__class__.module_registry['organizations.models']['OrgUserModel']
+            model = get_organisation_user_model()
         return model
 
     @property
     def _org_owner_model(self):
         model = self.__class__.module_registry[self.__class__.__module__]['OrgOwnerModel']
         if model is None:
-            model = self.__class__.module_registry['organizations.models']['OrgOwnerModel']
+            # model = self.__class__.module_registry['organizations.models']['OrgOwnerModel']
+            model = get_organisation_owner_model()
         return model
 
     class Meta:
@@ -85,8 +93,9 @@ class AbstractOrganization(six.with_metaclass(OrgMeta, SharedBaseModel, Abstract
     """
     Abstract Organization model.
     """
-    slug = SlugField(max_length=200, blank=False, editable=True,
-            populate_from='name', unique=True,
+    slug = models.SlugField(max_length=200, blank=False, editable=True,
+            #populate_from='name', unique=True,
+            unique=True,
             help_text=_("The name in all lowercase, suitable for URL identification"))
 
     class Meta(AbstractBaseOrganization.Meta):

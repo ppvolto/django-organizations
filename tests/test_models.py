@@ -2,19 +2,26 @@
 
 from functools import partial
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.test import TestCase
 from django.test.utils import override_settings
 
-from organizations.models import Organization
-from organizations.models import OrganizationOwner
-from organizations.models import OrganizationUser
+from organizations.base import (
+    get_organisation_model,
+    get_organisation_user_model,
+    get_organisation_owner_model
+)
+
 from organizations.utils import create_organization
 from test_abstract.models import CustomOrganization
 from test_accounts.models import Account
 from test_custom.models import Team
 
+User = get_user_model()
+Organization = get_organisation_model()
+OrganizationUser = get_organisation_user_model()
+OrganizationOwner = get_organisation_owner_model()
 
 @override_settings(USE_TZ=True)
 class ActiveManagerTests(TestCase):
@@ -179,6 +186,54 @@ class CustomModelTests(TestCase):
         duder_org_user = hometeam.add_user(self.duder)
         hometeam.owner.organization_user = duder_org_user
         hometeam.owner.save()
+
+    def test_abstract_change_user(self):
+        """
+        Ensure custom organizations inheriting abstract model
+        validate in owner change
+        """
+        create_org = partial(create_organization, model=CustomOrganization)
+        org1 = create_org(self.dave, "Org1")
+        duder_org_user = org1.add_user(self.duder)
+        org1.owner.organization_user = duder_org_user
+        org1.owner.save()
+
+
+@override_settings(
+    DJANGO_ORGANIZATION_ORGANISATION_MODEL="test_custom.SampleOrganisation",
+    DJANGO_ORGANIZATION_ORGANISATION_USER_MODEL="test_custom.SampleOrganisationUser",
+    DJANGO_ORGANIZATION_ORGANISATION_OWNER_MODEL="test_custom.SampleOrganisationOwner",
+)
+class CustomModelTests(TestCase):
+
+    # Load the world as we know it.
+    fixtures = ['users.json', 'orgs.json']
+
+    def setUp(self):
+        self.kurt = User.objects.get(username="kurt")
+        self.dave = User.objects.get(username="dave")
+        self.krist = User.objects.get(username="krist")
+        self.duder = User.objects.get(username="duder")
+        self.red_account = Account.objects.create(
+                name="Red Account",
+                monthly_subscription=1200,
+        )
+
+    def test_org_string(self):
+        self.assertEqual(self.red_account.__str__(), "Red Account")
+
+    def test_relation_name(self):
+        """Ensure user-related name is accessible from common attribute"""
+        self.assertEqual(self.red_account.user_relation_name,
+                "test_accounts_account")
+    # 
+    # def test_change_user(self):
+    #     """Ensure custom organizations validate in owner change"""
+    #     create_team = partial(create_organization, model=Organization)
+    #     hometeam = create_team(self.dave, "Hometeam")
+    #     duder_org_user = hometeam.add_user(self.duder)
+    #     hometeam.owner.organization_user = duder_org_user
+    #     hometeam.owner.save()
 
     def test_abstract_change_user(self):
         """

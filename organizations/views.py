@@ -36,8 +36,9 @@ from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
 
-from organizations.backends import invitation_backend
-from organizations.backends import registration_backend
+# from organizations.backends import invitation_backend
+# from organizations.backends import registration_backend
+from organizations.settings import organizations_settings
 from organizations.forms import OrganizationAddForm
 from organizations.forms import OrganizationForm
 from organizations.forms import OrganizationUserAddForm
@@ -147,7 +148,7 @@ class BaseOrganizationUserRemind(OrganizationUserMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        invitation_backend().send_reminder(self.object.user,
+        organizations_settings.INVITATION_BACKEND().send_reminder(self.object.user,
                 **{'domain': get_current_site(self.request),
                     'organization': self.organization, 'sender': request.user})
         return redirect(self.object)
@@ -174,7 +175,7 @@ class OrganizationSignup(FormView):
     template_name = "organizations/signup_form.html"
     # TODO get success from backend, because some backends may do something
     # else, like require verification
-    backend = registration_backend()
+    backend = organizations_settings.REGISTRATION_BACKEND()
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():

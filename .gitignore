@@ -10,4 +10,5 @@ docs/_build
 .coverage
 htmlcov/
 .cache
+__pycache__/
 .idea/

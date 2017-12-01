@@ -40,7 +40,9 @@ from importlib import import_module
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.apps import apps
 from django.utils.timezone import now
+from organizations.settings import organizations_settings
 
 
 class AutoCreatedField(models.DateTimeField):
@@ -69,12 +71,8 @@ class AutoLastModifiedField(AutoCreatedField):
         setattr(model_instance, self.attname, value)
         return value
 
-
-ORGS_SLUGFIELD = getattr(settings, 'ORGS_SLUGFIELD',
-                         'django_extensions.db.fields.AutoSlugField')
-
 try:
-    module, klass = ORGS_SLUGFIELD.rsplit('.', 1)
+    module, klass = organizations_settings.ORGANIZATION_SLUGFIELD.rsplit('.', 1)
     BaseSlugField = getattr(import_module(module), klass)
 except (ImportError, ValueError):
     raise ImproperlyConfigured("Your SlugField class, '{0}', is improperly defined. "
@@ -83,3 +81,8 @@ except (ImportError, ValueError):
 
 class SlugField(BaseSlugField):
     """Class redefinition for migrations"""
+
+
+
+def get_slug_field():
+    return apps.get_model(organizations_settings.ORGANIZATION_SLUGFIELD)

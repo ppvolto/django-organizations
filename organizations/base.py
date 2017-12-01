@@ -25,8 +25,13 @@
 
 from django.conf import settings
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.db.models.base import ModelBase
 from django.db.models.fields import FieldDoesNotExist
+
+from django.apps import apps
+
+from organizations.settings import organizations_settings
 
 try:
     import six
@@ -37,8 +42,8 @@ from django.utils.translation import ugettext_lazy as _
 from organizations.managers import ActiveOrgManager
 from organizations.managers import OrgManager
 
-USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-
+# UserModel = getattr(settings, 'AUTH_UserModel', 'auth.User')
+UserModel = get_user_model()
 
 class UnicodeMixin(object):
     """
@@ -110,7 +115,7 @@ class OrgMeta(ModelBase):
             cls.module_registry[module]['OrgModel']._meta.get_field("users")
         except FieldDoesNotExist:
             cls.module_registry[module]['OrgModel'].add_to_class("users",
-                models.ManyToManyField(USER_MODEL,
+                models.ManyToManyField(UserModel,
                         through=cls.module_registry[module]['OrgUserModel'].__name__,
                         related_name="%(app_label)s_%(class)s"))
 
@@ -123,7 +128,7 @@ class OrgMeta(ModelBase):
             cls.module_registry[module]['OrgUserModel']._meta.get_field("user")
         except FieldDoesNotExist:
             cls.module_registry[module]['OrgUserModel'].add_to_class("user",
-                models.ForeignKey(USER_MODEL, related_name="%(app_label)s_%(class)s"))
+                models.ForeignKey(UserModel, related_name="%(app_label)s_%(class)s"))
         try:
             cls.module_registry[module]['OrgUserModel']._meta.get_field("organization")
         except FieldDoesNotExist:
@@ -242,3 +247,18 @@ class AbstractBaseOrganizationOwner(UnicodeMixin, models.Model):
 class OrganizationOwnerBase(six.with_metaclass(OrgMeta, AbstractBaseOrganizationOwner)):
     class Meta(AbstractBaseOrganizationOwner.Meta):
         abstract = True
+
+
+def get_organisation_model():
+    """ Return the Application model that is active in this project. """
+    return apps.get_model(organizations_settings.ORGANIZATION_MODEL)
+
+
+def get_organisation_user_model():
+    """ Return the Application model that is active in this project. """
+    return apps.get_model(organizations_settings.ORGANIZATION_USER_MODEL)
+
+
+def get_organisation_owner_model():
+    """ Return the Application model that is active in this project. """
+    return apps.get_model(organizations_settings.ORGANIZATION_OWNER_MODEL)

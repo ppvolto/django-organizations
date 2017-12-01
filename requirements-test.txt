@@ -1,13 +1,16 @@
 # Requirements for executing tests in test environments
 coverage
-mock>=1.0.1
-pytest-django>=3.0.0
-pytest-cov>=2.4.0
-flake8>=2.4.1
+mock
+pytest
+pytest-cov
+pytest-django
+pytest-xdist
+flake8
 
 # Required to test default models
-django-extensions>=1.6.0
-django-autoslug>=1.9.0
+django-extensions
+django-autoslug
 
 # Required for mocking signals
-mock-django==0.6.9
+mock-django
+

@@ -56,8 +56,8 @@ class InvitationTests(TestCase):
         self.pending_user.save()
 
     def test_backend_definition(self):
-        from organizations.backends import invitation_backend
-        self.assertTrue(isinstance(invitation_backend(), InvitationBackend))
+        from organizations.settings import organizations_settings
+        self.assertTrue(isinstance(organizations_settings.INVITATION_BACKEND(), InvitationBackend))
 
     def test_create_user(self):
         invited = InvitationBackend().invite_by_email("sedgewick@example.com")
@@ -142,8 +142,8 @@ class RegistrationTests(TestCase):
         self.pending_user.save()
 
     def test_backend_definition(self):
-        from organizations.backends import registration_backend
-        self.assertTrue(isinstance(registration_backend(), RegistrationBackend))
+        from organizations.settings import organizations_settings
+        self.assertTrue(isinstance(organizations_settings.REGISTRATION_BACKEND(), RegistrationBackend))
 
     def test_register_authenticated(self):
         """Ensure an already authenticated user is redirected"""

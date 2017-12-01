@@ -7,11 +7,16 @@ import organizations.base
 import django.utils.timezone
 from django.conf import settings
 
+from organizations.settings import organizations_settings
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        migrations.swappable_dependency(organizations_settings.ORGANIZATION_MODEL),
+        migrations.swappable_dependency(organizations_settings.ORGANIZATION_USER_MODEL),
+        migrations.swappable_dependency(organizations_settings.ORGANIZATION_OWNER_MODEL),
     ]
 
     operations = [
@@ -28,10 +33,10 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['name'],
                 'abstract': False,
+                'swappable': 'DJANGO_ORGANIZATION_ORGANIZATION_MODEL',
                 'verbose_name': 'organization',
                 'verbose_name_plural': 'organizations',
-            },
-            bases=(organizations.base.UnicodeMixin, models.Model),
+            }
         ),
         migrations.CreateModel(
             name='OrganizationOwner',
@@ -39,13 +44,13 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', organizations.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False)),
                 ('modified', organizations.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
-                ('organization', models.OneToOneField(related_name='owner', to='organizations.Organization')),
+                ('organization', models.OneToOneField(related_name='owner', to=organizations_settings.ORGANIZATION_MODEL)),
             ],
             options={
+                'swappable': 'DJANGO_ORGANIZATION_ORGANIZATION_OWNER_MODEL',
                 'verbose_name': 'organization owner',
                 'verbose_name_plural': 'organization owners',
-            },
-            bases=(organizations.base.UnicodeMixin, models.Model),
+            }
         ),
         migrations.CreateModel(
             name='OrganizationUser',
@@ -54,26 +59,26 @@ class Migration(migrations.Migration):
                 ('created', organizations.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False)),
                 ('modified', organizations.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False)),
                 ('is_admin', models.BooleanField(default=False)),
-                ('organization', models.ForeignKey(related_name='organization_users', to='organizations.Organization')),
+                ('organization', models.ForeignKey(related_name='organization_users', to=organizations_settings.ORGANIZATION_MODEL)),
                 ('user', models.ForeignKey(related_name='organizations_organizationuser', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ['organization', 'user'],
                 'abstract': False,
+                'swappable': 'DJANGO_ORGANIZATION_ORGANIZATION_USER_MODEL',
                 'verbose_name': 'organization user',
                 'verbose_name_plural': 'organization users',
-            },
-            bases=(organizations.base.UnicodeMixin, models.Model),
+            }
         ),
         migrations.AddField(
             model_name='organizationowner',
             name='organization_user',
-            field=models.OneToOneField(to='organizations.OrganizationUser'),
+            field=models.OneToOneField(to=organizations_settings.ORGANIZATION_USER_MODEL),
         ),
         migrations.AddField(
             model_name='organization',
             name='users',
-            field=models.ManyToManyField(related_name='organizations_organization', through='organizations.OrganizationUser', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(related_name='organizations_organization', through=organizations_settings.ORGANIZATION_USER_MODEL, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterUniqueTogether(
             name='organizationuser',
