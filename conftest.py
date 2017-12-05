@@ -13,7 +13,7 @@ def pytest_configure():
         DATABASES={
             "default": {
                 "ENGINE": "django.db.backends.sqlite3",
-                "NAME": "test.sqlite3",
+                "NAME": "test.sqlite",
             }
         },
         INSTALLED_APPS=[
@@ -24,11 +24,12 @@ def pytest_configure():
             # first and *then* the organizations app itself is an implicit test
             # that the organizations app need not be installed in order to use
             # its base models.
+            "django_extensions",
             "test_accounts",
             "test_abstract",
             "test_vendors",
-            "organizations",
             "test_custom",
+            "organizations",
         ],
         MIDDLEWARE_CLASSES=[],
         SITE_ID=1,

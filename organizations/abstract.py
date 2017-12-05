@@ -45,14 +45,12 @@ from organizations.base import (
     get_organisation_user_model,
     get_organisation_owner_model
 )
-# from organizations.fields import get_slug_field
+from organizations.fields import SlugField
 from organizations.fields import AutoCreatedField
 from organizations.fields import AutoLastModifiedField
 from organizations.signals import user_added
 from organizations.signals import user_removed
 from organizations.signals import owner_changed
-
-# SlugField = get_slug_field()
 
 ORGS_TIMESTAMPED_MODEL = getattr(settings, 'ORGS_TIMESTAMPED_MODEL', None)
 
@@ -60,6 +58,7 @@ if ORGS_TIMESTAMPED_MODEL:
     warnings.warn("Configured TimestampModel has been replaced and is now ignored.",
                   DeprecationWarning)
 
+# SlugField = get_slug_field()
 
 class SharedBaseModel(models.Model):
     """
@@ -93,10 +92,14 @@ class AbstractOrganization(six.with_metaclass(OrgMeta, SharedBaseModel, Abstract
     """
     Abstract Organization model.
     """
-    slug = models.SlugField(max_length=200, blank=False, editable=True,
-            #populate_from='name', unique=True,
+    slug = SlugField(
+            max_length=200,
+            blank=False,
+            editable=True,
+            populate_from='name',
             unique=True,
-            help_text=_("The name in all lowercase, suitable for URL identification"))
+            help_text=_("The name in all lowercase, suitable for URL identification")
+    )
 
     class Meta(AbstractBaseOrganization.Meta):
         abstract = True

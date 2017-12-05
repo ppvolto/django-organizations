@@ -33,7 +33,7 @@ class Organization(AbstractOrganization):
     Default Organization model.
     """
     class Meta(AbstractOrganization.Meta):
-        swappable = "DJANGO_ORGANIZATION_ORGANIZATION_MODEL"
+        swappable = "ORGS_ORGANIZATION_MODEL"
 
 
 class OrganizationUser(AbstractOrganizationUser):
@@ -41,7 +41,7 @@ class OrganizationUser(AbstractOrganizationUser):
     Default OrganizationUser model.
     """
     class Meta(AbstractOrganizationUser.Meta):
-        swappable = "DJANGO_ORGANIZATION_ORGANIZATION_USER_MODEL"
+        swappable = "ORGS_ORGANIZATION_USER_MODEL"
 
 
 class OrganizationOwner(AbstractOrganizationOwner):
@@ -49,4 +49,4 @@ class OrganizationOwner(AbstractOrganizationOwner):
     Default OrganizationOwner model.
     """
     class Meta(AbstractOrganizationOwner.Meta):
-        swappable = "DJANGO_ORGANIZATION_ORGANIZATION_OWNER_MODEL"
+        swappable = "ORGS_ORGANIZATION_OWNER_MODEL"

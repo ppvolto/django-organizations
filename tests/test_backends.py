@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.http import QueryDict
 from django.test import TestCase
@@ -106,7 +106,7 @@ class InvitationTests(TestCase):
             organization=org,
             sender=self.user)
         self.assertEqual(result, False)
-        self.assertEquals(0, len(mail.outbox))
+        self.assertEqual(0, len(mail.outbox))
 
     def test_send_notification_active_user(self):
         """
@@ -120,8 +120,8 @@ class InvitationTests(TestCase):
             domain='example.com',
             organization=org,
             sender=self.pending_user)
-        self.assertEquals(1, len(mail.outbox))
-        self.assertEquals(
+        self.assertEqual(1, len(mail.outbox))
+        self.assertEqual(
             mail.outbox[0].subject,
             u"You've been added to an organization")
 

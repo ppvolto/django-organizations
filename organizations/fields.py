@@ -71,18 +71,18 @@ class AutoLastModifiedField(AutoCreatedField):
         setattr(model_instance, self.attname, value)
         return value
 
+
 try:
-    module, klass = organizations_settings.ORGANIZATION_SLUGFIELD.rsplit('.', 1)
-    BaseSlugField = getattr(import_module(module), klass)
+    parts = organizations_settings.ORGANIZATION_SLUGFIELD.split(".")
+    module_path, class_name = ".".join(parts[:-1]), parts[-1]
+    module = import_module(module_path)
+    BaseSlugField = getattr(module, class_name)
 except (ImportError, ValueError):
     raise ImproperlyConfigured("Your SlugField class, '{0}', is improperly defined. "
-                   "See the documentation and install an auto slug field".format(ORGS_SLUGFIELD))
-
+                   "See the documentation and install an auto slug field".format(organizations_settings.ORGANIZATION_SLUGFIELD))
 
 class SlugField(BaseSlugField):
     """Class redefinition for migrations"""
-
-
 
 def get_slug_field():
     return apps.get_model(organizations_settings.ORGANIZATION_SLUGFIELD)

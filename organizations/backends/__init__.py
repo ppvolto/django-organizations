@@ -23,13 +23,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from importlib import import_module
-
 from organizations.settings import organizations_settings
 
-def invitation_backend():
+def get_invitation_backend():
     return organizations_settings.INVITATION_BACKEND
 
 
-def registration_backend():
+def get_registration_backend():
     return organizations_settings.REGISTRATION_BACKEND

@@ -4,13 +4,11 @@ mock
 pytest
 pytest-cov
 pytest-django
-pytest-xdist
 flake8
 
 # Required to test default models
 django-extensions
-django-autoslug
+# django-autoslug
 
 # Required for mocking signals
 mock-django
-

@@ -82,6 +82,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'organizations',
+    'test_accounts',
+    'test_abstract',
+    'test_vendors',
+    'test_custom',
     'tests',
 )
 
@@ -130,5 +134,3 @@ LOGGING = {
         },
     }
 }
-
-DJANGO_ORGANIZATION_ORGANIZATION_SLUGFIELD = 'autoslug.AutoSlugField'
