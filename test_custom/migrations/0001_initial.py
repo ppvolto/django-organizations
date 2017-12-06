@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Team',
             fields=[
-                ('organization_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='organizations.Organization')),
+                ('organization_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='organizations.Organization', on_delete=models.CASCADE)),
                 ('sport', models.CharField(max_length=100, null=True, blank=True)),
             ],
             options={

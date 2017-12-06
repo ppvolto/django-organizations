@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             name='AccountOwner',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('organization', models.OneToOneField(related_name='owner', to='test_accounts.Account')),
+                ('organization', models.OneToOneField(related_name='owner', to='test_accounts.Account', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -43,8 +43,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('user_type', models.CharField(default=b'', max_length=1)),
-                ('organization', models.ForeignKey(related_name='organization_users', to='test_accounts.Account')),
-                ('user', models.ForeignKey(related_name='test_accounts_accountuser', to=settings.AUTH_USER_MODEL)),
+                ('organization', models.ForeignKey(related_name='organization_users', to='test_accounts.Account', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(related_name='test_accounts_accountuser', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['organization', 'user'],
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='accountowner',
             name='organization_user',
-            field=models.OneToOneField(to='test_accounts.AccountUser'),
+            field=models.OneToOneField(to='test_accounts.AccountUser', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='account',
